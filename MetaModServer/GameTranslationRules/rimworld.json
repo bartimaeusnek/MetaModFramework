@@ -1,0 +1,17 @@
+[
+  {
+    "ServerName": "stoneStone",
+    "ClientName": "thingStone",
+    "GameName": "Rimworld"
+  },
+  {
+    "ServerName": "logOak",
+    "ClientName": "thingWood",
+    "GameName": "Rimworld"
+  },
+  {
+    "ServerName": "stoneBricks",
+    "ClientName": "thingBricks",
+    "GameName": "Rimworld"
+  }
+]

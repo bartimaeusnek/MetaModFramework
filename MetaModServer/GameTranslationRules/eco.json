@@ -1,0 +1,17 @@
+[
+  {
+    "ServerName": "stoneStone",
+    "ClientName": "Eco.Mods.TechTree.StoneItem",
+    "GameName": "Eco"
+  },
+  {
+    "ServerName": "logOak",
+    "ClientName": "Eco.Mods.TechTree.OakLogItem",
+    "GameName": "Eco"
+  },
+  {
+    "ServerName": "stoneBricks",
+    "ClientName": "Eco.Mods.TechTree.BrickItem",
+    "GameName": "Eco"
+  }
+]

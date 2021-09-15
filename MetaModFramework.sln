@@ -1,0 +1,33 @@
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetaModServer", "MetaModServer\MetaModServer.csproj", "{840A5663-E58C-4B21-85E7-B82626890A51}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetaModClientCore", "MetaModClientCore\MetaModClientCore.csproj", "{6FCFC6AD-8A17-4FE5-AE82-D987B988C0C6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientTests", "ClientTests\ClientTests.csproj", "{4ABF6BE8-653B-4A88-AA7B-1B94C2A6CA74}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCore.Identity.LiteDB", "AspNetCore.Identity.LiteDB\AspNetCore.Identity.LiteDB\AspNetCore.Identity.LiteDB\AspNetCore.Identity.LiteDB.csproj", "{83B4B10D-246D-4115-8D5E-73B7D765AEF1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{840A5663-E58C-4B21-85E7-B82626890A51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{840A5663-E58C-4B21-85E7-B82626890A51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{840A5663-E58C-4B21-85E7-B82626890A51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{840A5663-E58C-4B21-85E7-B82626890A51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FCFC6AD-8A17-4FE5-AE82-D987B988C0C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FCFC6AD-8A17-4FE5-AE82-D987B988C0C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FCFC6AD-8A17-4FE5-AE82-D987B988C0C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FCFC6AD-8A17-4FE5-AE82-D987B988C0C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4ABF6BE8-653B-4A88-AA7B-1B94C2A6CA74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4ABF6BE8-653B-4A88-AA7B-1B94C2A6CA74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4ABF6BE8-653B-4A88-AA7B-1B94C2A6CA74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4ABF6BE8-653B-4A88-AA7B-1B94C2A6CA74}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83B4B10D-246D-4115-8D5E-73B7D765AEF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83B4B10D-246D-4115-8D5E-73B7D765AEF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83B4B10D-246D-4115-8D5E-73B7D765AEF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83B4B10D-246D-4115-8D5E-73B7D765AEF1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,17 @@
+[
+	{
+		"ServerName": "stoneStone",
+		"ClientName": "minecraft:stone",
+		"GameName": "Minecraft_1.17.1"
+	},
+	{
+		"ServerName": "logOak",
+		"ClientName": "minecraft:oak_wood",
+		"GameName": "Minecraft_1.17.1"
+	},
+	{
+		"ServerName": "stoneBricks",
+		"ClientName": "minecraft:bricks",
+		"GameName": "Minecraft_1.17.1"
+	}
+]
