@@ -1,6 +1,6 @@
 package com.github.bartimaeusnek.metamodjavaclientcore;
 
-import com.github.bartimaeusnek.metamodjavaclientcore.dto.ApiReference;
+import com.github.bartimaeusnek.metamodjavaclientcore.dto.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import lombok.AccessLevel;
@@ -12,6 +12,7 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -21,7 +22,13 @@ public abstract class BaseClient {
 
     private final HttpClient httpClient;
     private final String urlBase;
-    private final Gson gson = new GsonBuilder().setFieldNamingStrategy(f -> f.getName().toLowerCase()).create();
+    private final Gson gson = new GsonBuilder()
+            .setFieldNamingStrategy(f -> f.getName().toLowerCase(Locale.ROOT))
+            .registerTypeAdapter(ClientItemDefinition.class, new ClientItemDefinition.Deserializer())
+            .registerTypeAdapter(ServerItemDefinition.class, new ServerItemDefinition.Deserializer())
+            .registerTypeAdapter(ClientItem.class, new ClientItem.Deserializer())
+            .registerTypeAdapter(ServerItem.class, new ServerItem.Deserializer())
+            .create();
 
     protected BaseClient(String baseUrl) {
         HttpClient client = null;

@@ -9,6 +9,7 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -33,7 +34,7 @@ public class ItemClient extends AuthorizedClient {
                 .header(HttpHeader.AUTHORIZATION, "Bearer " + this.getToken())
                 .timeout(1, TimeUnit.MINUTES)
                 .idleTimeout(1, TimeUnit.MINUTES)
-                .content(new StringContentProvider(getGson().toJson(items)))
+                .content(new StringContentProvider(getGson().toJson(items)), "application/json")
                 .send();
 
         return response.getStatus() == 200;
@@ -50,10 +51,10 @@ public class ItemClient extends AuthorizedClient {
                 .header(HttpHeader.AUTHORIZATION, "Bearer " + this.getToken())
                 .timeout(1, TimeUnit.MINUTES)
                 .idleTimeout(1, TimeUnit.MINUTES)
-                .content(new StringContentProvider(getGson().toJson(items)))
+                .content(new StringContentProvider(getGson().toJson(items)), "application/json")
                 .send();
-
-        return response.getStatus() == 200;
+        var status = response.getStatus();
+        return status == 200;
     }
 
     public List<String> getAllItemsForGameAsync() throws ExecutionException, InterruptedException, TimeoutException {
@@ -91,7 +92,10 @@ public class ItemClient extends AuthorizedClient {
                 .idleTimeout(1, TimeUnit.MINUTES)
                 .send();
 
+        var status = response.getStatus();
         var listType = new TypeToken<List<ClientItem>>(){}.getType();
-        return getGson().fromJson(response.getContentAsString(), listType);
+        var content = response.getContentAsString();
+
+        return getGson().fromJson(content, listType);
     }
 }

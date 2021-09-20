@@ -28,7 +28,7 @@ public class AccountClient extends BaseClient
             return response.getStatus() == 202;
         }
 
-        public String loginAsync(String userName, String password, String audience) throws ExecutionException, InterruptedException, TimeoutException {
+        public String loginAsync(String userName, String password, String audience) throws ExecutionException, InterruptedException, TimeoutException, IllegalStateException {
 
             var response = getHttpClient()
                     .newRequest(getUrlBase()+"Login")
@@ -39,6 +39,9 @@ public class AccountClient extends BaseClient
                     .param("audience",audience)
                     .param("password",password)
                     .send();
+
+            if (response.getStatus() != 200)
+                throw new IllegalStateException("Login Data Incorrect");
 
             return response.getContentAsString();
         }
