@@ -30,7 +30,8 @@ namespace MetaModFramework.Controllers
             var userClaimsPrincipal = this.HttpContext.User;
             if (userClaimsPrincipal.Identity == null)
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-            
+            if (ServiceTransactions.TransactionNotInUse(userClaimsPrincipal.Identity.Name))
+                return new StatusCodeResult(StatusCodes.Status423Locked);
             return this.Ok(await this._db.GetCollection<ServerItem>(userClaimsPrincipal.Identity.Name + "_"+ nameof(ServerItemDefinition)).Query().ToArrayAsync());
         }
 
@@ -54,6 +55,9 @@ namespace MetaModFramework.Controllers
             if (userClaimsPrincipal.Identity == null)
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             
+            if (ServiceTransactions.TransactionNotInUse(userClaimsPrincipal.Identity.Name))
+                return new StatusCodeResult(StatusCodes.Status423Locked);
+            
             var serverItems = await this._db
                                         .GetCollection<ServerItem>(userClaimsPrincipal.Identity.Name + "_" +
                                                                    nameof(ServerItemDefinition)).Query().ToArrayAsync();
@@ -69,6 +73,8 @@ namespace MetaModFramework.Controllers
             var userClaimsPrincipal = this.HttpContext.User;
             if (userClaimsPrincipal.Identity == null)
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            if (ServiceTransactions.TransactionNotInUse(userClaimsPrincipal.Identity.Name))
+                return new StatusCodeResult(StatusCodes.Status423Locked);
             var serverItemDefinitions = (await this._itemTranslationLayer.GetServerNamesAsync(item)).FirstOrDefault();
             if (serverItemDefinitions == default)
                 return new StatusCodeResult(StatusCodes.Status400BadRequest);
@@ -100,7 +106,8 @@ namespace MetaModFramework.Controllers
             var userClaimsPrincipal = this.HttpContext.User;
             if (userClaimsPrincipal.Identity == null)
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-            
+            if (ServiceTransactions.TransactionNotInUse(userClaimsPrincipal.Identity.Name))
+                return new StatusCodeResult(StatusCodes.Status423Locked);
             var serverItemDefinitions = await this._itemTranslationLayer.GetServerNamesAsync(items);
             
             var col    = this._db.GetCollection<ServerItem>(userClaimsPrincipal.Identity.Name + "_" + nameof(ServerItemDefinition));

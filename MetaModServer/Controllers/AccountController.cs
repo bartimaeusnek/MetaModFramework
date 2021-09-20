@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using AspNetCore.Identity.LiteDB.Models;
+using MetaModFramework.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -80,7 +81,9 @@ namespace MetaModFramework.Controllers
                                              claims: authClaims,
                                              signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha512)
                                             );
-  
+            
+            ServiceTransactions.AddUser(user.UserName);
+            
             return this.Ok(new JwtSecurityTokenHandler().WriteToken(token));
         }
         
