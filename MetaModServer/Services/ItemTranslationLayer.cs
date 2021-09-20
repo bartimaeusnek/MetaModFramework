@@ -105,10 +105,12 @@ namespace MetaModFramework.Services
             var ret = new List<ClientItem>();
             foreach (var si in serverItem)
             {
-                ret.Add(new ClientItem
+                var def = await GetClientNameAsync(mod, si.ItemDefinition);
+                if (def != null)
+                    ret.Add(new ClientItem
                         {
                             Amount         = si.Amount,
-                            ItemDefinition = await GetClientNameAsync(mod, si.ItemDefinition)
+                            ItemDefinition = def
                         }
                        );
             }
