@@ -1,4 +1,4 @@
-
+using System;
 using System.Collections.Generic;
 using System.Text;
 using AspNetCore.Identity.LiteDB;
@@ -7,6 +7,7 @@ using AspNetCore.Identity.LiteDB.Models;
 using LiteDB.Async;
 using MetaModFramework.DTOs;
 using MetaModFramework.Services;
+using MetaModFramework.WebSocketProtocol;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -36,7 +37,8 @@ namespace MetaModFramework
             
             services.AddSingleton<ILiteDbContext, LiteDbInstance>()
                     .AddSingleton(provider => ((LiteDbInstance)provider.GetService<ILiteDbContext>())?.Database)
-                    .AddSingleton<ItemTranslationLayer>();
+                    .AddSingleton<ItemTranslationLayer>()
+                    .AddTransient<FlowControl>();
             
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
                                                                 {
@@ -84,12 +86,12 @@ namespace MetaModFramework
                 app.UseDeveloperExceptionPage();
             }
             
-            app.UseHttpsRedirection()
-               .UseSwagger()
+            app.UseSwagger()
                .UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "MetaModServer v1"))
                .UseRouting()
                .UseAuthentication()
                .UseAuthorization()
+               .UseWebSockets()
                .UseEndpoints(endpoints =>
                              {
                                  endpoints.MapControllers();

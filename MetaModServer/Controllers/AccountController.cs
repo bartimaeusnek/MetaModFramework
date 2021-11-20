@@ -39,6 +39,9 @@ namespace MetaModFramework.Controllers
         [HttpPost, Route("/v1/Register"), AllowAnonymous]
         public async Task<StatusCodeResult> RegisterAsync(string name, string email, string password)
         {
+            if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(password))
+                return new StatusCodeResult(StatusCodes.Status400BadRequest);
+
             name     = name.Trim();
             password = password.Trim();
             email    = email.Trim();
@@ -54,6 +57,9 @@ namespace MetaModFramework.Controllers
         [HttpPost, Route("/v1/Login"), AllowAnonymous]
         public async Task<IActionResult> LoginAsync(string userName, string password, string audience)
         {
+            if (string.IsNullOrWhiteSpace(userName) || string.IsNullOrWhiteSpace(password))
+                return new StatusCodeResult(StatusCodes.Status400BadRequest);
+            
             userName = userName.Trim();
             password = password.Trim();
             var result = await _signInManager.PasswordSignInAsync(userName, password, true, false);

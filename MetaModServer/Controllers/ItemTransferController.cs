@@ -1,8 +1,11 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using LiteDB.Async;
 using MetaModFramework.DTOs;
 using MetaModFramework.Services;
+using MetaModFramework.WebSocketProtocol;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -24,15 +27,13 @@ namespace MetaModFramework.Controllers
             this._itemTranslationLayer = itemTranslationLayer;
         }
 
-        [HttpGet, Route("/v1/Items/All")]
+        [HttpGet, Route("/v1/Items/All"), Obsolete("Use WebSocket Connection instead!")]
         public async Task<IActionResult> GetAllAsync()
         {
             var userClaimsPrincipal = this.HttpContext.User;
             if (userClaimsPrincipal.Identity == null)
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-            if (ServiceTransactions.TransactionNotInUse(userClaimsPrincipal.Identity.Name))
-                return new StatusCodeResult(StatusCodes.Status423Locked);
-            return this.Ok(await this._db.GetCollection<ServerItem>(userClaimsPrincipal.Identity.Name + "_"+ nameof(ServerItemDefinition)).Query().ToArrayAsync());
+           return this.Ok(await this._db.GetCollection<ServerItem>(userClaimsPrincipal.Identity.Name + "_"+ nameof(ServerItemDefinition)).Query().ToArrayAsync());
         }
 
         /**
@@ -48,77 +49,104 @@ namespace MetaModFramework.Controllers
             return game != null ? this.Ok(await this._itemTranslationLayer.GetClientNamesAsync(game, serverItems)) : this.Ok(serverItems);
         }
 
-        [HttpGet, Route("/v1/Items/{game}")]
-        public async Task<IActionResult> GetAsync([FromRoute]string game)
+        [HttpGet, Route("/v1/Items/{game}"), Obsolete("Use WebSocket Connection instead!")]
+        public async Task<IActionResult> GetAsync([FromRoute] string game)
         {
             var userClaimsPrincipal = this.HttpContext.User;
             if (userClaimsPrincipal.Identity == null)
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             
-            if (ServiceTransactions.TransactionNotInUse(userClaimsPrincipal.Identity.Name))
-                return new StatusCodeResult(StatusCodes.Status423Locked);
-            
-            var serverItems = await this._db
-                                        .GetCollection<ServerItem>(userClaimsPrincipal.Identity.Name + "_" +
-                                                                   nameof(ServerItemDefinition)).Query().ToArrayAsync();
-            
-            var content = await this._itemTranslationLayer.GetClientNamesAsync(game, serverItems);
-            
-            return this.Ok(content);
+            return this.Ok(await GetAsyncInternal(game, userClaimsPrincipal.Identity.Name, this._itemTranslationLayer, this._db));
         }
-        
-        [HttpPut, Route("/v1/Items")]
+
+        [NonAction]
+        internal static async Task<IEnumerable<ClientItem>> GetAsyncInternal(string game, string name, ItemTranslationLayer itemTranslationLayer, LiteDatabaseAsync liteDatabaseAsync)
+        {
+            var serverItems = await liteDatabaseAsync
+                                   .GetCollection<ServerItem>(name + "_" +
+                                                              nameof(ServerItemDefinition)).Query().ToArrayAsync();
+            
+            var content = await itemTranslationLayer.GetClientNamesAsync(game, serverItems);
+            return content;
+        }
+
+        [HttpPut, Route("/v1/Items"), Obsolete("Use WebSocket Connection instead!")]
         public async Task<IActionResult> RequestAsync([FromBody] ClientItem item)
         {
             var userClaimsPrincipal = this.HttpContext.User;
             if (userClaimsPrincipal.Identity == null)
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-            if (ServiceTransactions.TransactionNotInUse(userClaimsPrincipal.Identity.Name))
-                return new StatusCodeResult(StatusCodes.Status423Locked);
-            var serverItemDefinitions = (await this._itemTranslationLayer.GetServerNamesAsync(item)).FirstOrDefault();
-            if (serverItemDefinitions == default)
-                return new StatusCodeResult(StatusCodes.Status400BadRequest);
+            var name = userClaimsPrincipal.Identity.Name;
+            WsEventHandler.OnHandler();
+            return new StatusCodeResult(
+                                             await PutRequestItems(
+                                                                    item,
+                                                                    name,
+                                                                    this._itemTranslationLayer,
+                                                                    this._db
+                                                                   )
+                                       );
+        }
 
-            var col = this._db.GetCollection<ServerItem>(userClaimsPrincipal.Identity.Name + "_" +
-                                                         nameof(ServerItemDefinition));
+        [NonAction]
+        internal static async Task<int> PutRequestItems(ClientItem item, string name, ItemTranslationLayer itemTranslationLayer, LiteDatabaseAsync liteDatabaseAsync)
+        {
+            var serverItemDefinitions = (await itemTranslationLayer.GetServerNamesAsync(item)).FirstOrDefault();
+            if (serverItemDefinitions == default)
+                return StatusCodes.Status400BadRequest;
+
+            var col = liteDatabaseAsync.GetCollection<ServerItem>(name + "_" +
+                                                                  nameof(ServerItemDefinition));
             
             var stuff = await col
                              .Query().Where(x => x.ItemDefinition == serverItemDefinitions.ItemDefinition).FirstOrDefaultAsync();
             
             if (stuff == default)
-                return new StatusCodeResult(StatusCodes.Status406NotAcceptable);
+                return StatusCodes.Status406NotAcceptable;
 
             if (stuff.Amount < item.Amount)
-                return new StatusCodeResult(StatusCodes.Status507InsufficientStorage);
+                return StatusCodes.Status507InsufficientStorage;
 
             stuff.Amount -= item.Amount;
 
             if (!await col.UpdateAsync(stuff)) 
-                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+                return StatusCodes.Status500InternalServerError;
             
             await col.DeleteManyAsync(x => x.Amount == 0);
-            return this.Ok();
+            return StatusCodes.Status200OK;
         }
-        
-        [HttpPost, Route("/v1/Items")]
+
+        [HttpPost, Route("/v1/Items"), Obsolete("Use WebSocket Connection instead!")]
         public async Task<IActionResult> PostAsync([FromBody] params ClientItem[] items)
         {
-            var userClaimsPrincipal = this.HttpContext.User;
+            var userClaimsPrincipal = HttpContext.User;
             if (userClaimsPrincipal.Identity == null)
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-            if (ServiceTransactions.TransactionNotInUse(userClaimsPrincipal.Identity.Name))
-                return new StatusCodeResult(StatusCodes.Status423Locked);
-            var serverItemDefinitions = await this._itemTranslationLayer.GetServerNamesAsync(items);
+            WsEventHandler.OnHandler();
             
-            var col    = this._db.GetCollection<ServerItem>(userClaimsPrincipal.Identity.Name + "_" + nameof(ServerItemDefinition));
-            
+            var ret = await PostUpsertItems(items, userClaimsPrincipal.Identity.Name, this._itemTranslationLayer,
+                                            this._db);
+
+            return this.Ok(ret);
+        }
+
+        [NonAction]
+        internal static async Task<int> PostUpsertItems(ClientItem[] items, string userName, ItemTranslationLayer itemTranslationLayer, LiteDatabaseAsync liteDatabaseAsync)
+        {
+            var serverItemDefinitions = await itemTranslationLayer.GetServerNamesAsync(items);
+
+            var col = liteDatabaseAsync.GetCollection<ServerItem>(userName + "_" +
+                                                                  nameof(ServerItemDefinition));
+
             foreach (var def in serverItemDefinitions)
             {
                 if (await col.ExistsAsync(x => x.ItemDefinition == def.ItemDefinition))
-                    def.Amount += await col.Query().Where(x => x.ItemDefinition == def.ItemDefinition).Select(x => x.Amount).SingleOrDefaultAsync();
+                    def.Amount += await col.Query().Where(x => x.ItemDefinition == def.ItemDefinition).Select(x => x.Amount)
+                                           .SingleOrDefaultAsync();
             }
             
-            return this.Ok(await col.UpsertAsync(serverItemDefinitions));
+            var ret = await col.UpsertAsync(serverItemDefinitions);
+            return ret;
         }
 
         [HttpGet, Route("/v1/Items/{game}/Available"), AllowAnonymous]
