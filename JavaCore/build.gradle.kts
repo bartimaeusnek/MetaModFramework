@@ -20,4 +20,7 @@ java {
 dependencies {
     implementation("com.google.code.gson:gson:2.8.8")
     implementation("org.eclipse.jetty:jetty-client:9.4.43.v20210629")
+	implementation("org.java-websocket:Java-WebSocket:1.5.2")
+	implementation("org.slf4j:slf4j-api:1.7.25")
+	implementation("org.slf4j:slf4j-simple:1.7.25")
 }
