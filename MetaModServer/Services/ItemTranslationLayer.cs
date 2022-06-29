@@ -17,9 +17,9 @@ namespace MetaModFramework.Services
             [BsonCtor]
             public ItemTranslationEntry(string serverName, string clientName, string gameName)
             {
-                this.ServerName = serverName;
-                this.ClientName = clientName;
-                this.GameName   = gameName;
+                ServerName = serverName;
+                ClientName = clientName;
+                GameName   = gameName;
             }
             public string ServerName { get; }
             public string ClientName { get; }
@@ -29,21 +29,21 @@ namespace MetaModFramework.Services
             // ReSharper disable once UnusedMember.Local
             public int Id
             {
-                get { return this.GetHashCode(); }
+                get { return GetHashCode(); }
             }
 
             public bool Equals(ItemTranslationEntry other)
             {
                 if (ReferenceEquals(null, other)) return false;
                 if (ReferenceEquals(this, other)) return true;
-                return string.Equals(this.ServerName, other.ServerName, StringComparison.InvariantCultureIgnoreCase) && string.Equals(this.ClientName, other.ClientName, StringComparison.InvariantCultureIgnoreCase) && string.Equals(this.GameName, other.GameName, StringComparison.InvariantCultureIgnoreCase);
+                return string.Equals(ServerName, other.ServerName, StringComparison.InvariantCultureIgnoreCase) && string.Equals(ClientName, other.ClientName, StringComparison.InvariantCultureIgnoreCase) && string.Equals(GameName, other.GameName, StringComparison.InvariantCultureIgnoreCase);
             }
 
             public override bool Equals(object obj)
             {
                 if (ReferenceEquals(null, obj)) return false;
                 if (ReferenceEquals(this, obj)) return true;
-                if (obj.GetType() != this.GetType()) return false;
+                if (obj.GetType() != GetType()) return false;
                 return Equals((ItemTranslationEntry)obj);
             }
 
@@ -52,9 +52,9 @@ namespace MetaModFramework.Services
                 unchecked
                 {
                     var hash = (int) 2166136261;
-                    hash = ( hash * 16777619 ) ^ this.ServerName.GetStableHashCode();
-                    hash = ( hash * 16777619 ) ^ this.ClientName.GetStableHashCode();
-                    hash = ( hash * 16777619 ) ^ this.GameName.GetStableHashCode();
+                    hash = ( hash * 16777619 ) ^ ServerName.GetStableHashCode();
+                    hash = ( hash * 16777619 ) ^ ClientName.GetStableHashCode();
+                    hash = ( hash * 16777619 ) ^ GameName.GetStableHashCode();
                     return hash;
                 }
             }
@@ -71,15 +71,15 @@ namespace MetaModFramework.Services
         
         public ItemTranslationLayer(LiteDatabaseAsync db)
         {
-            this._db         = db;
-            this._readInTask = ReadAllAsync();
+            _db         = db;
+            _readInTask = ReadAllAsync();
         }
         
         public Task<List<string>> GetAllDefinitions(string mod)
         {
            return Task.Run(() =>
                            {
-                               return this._StC_dictionary.Values
+                               return _StC_dictionary.Values
                                           .SelectMany(x => x, (x, ite) => new { x, ite })
                                           .Where(t => t.ite.GameName.Equals(mod))
                                           .Select(t => t.ite.ClientName)
@@ -89,9 +89,9 @@ namespace MetaModFramework.Services
         
         private async Task<ClientItemDefinition> GetClientNameAsync(string mod, ServerItemDefinition serverItemDefinition)
         {
-            await this._readInTask;
+            await _readInTask;
         
-            this._StC_dictionary.TryGetValue(mod, out var entries);
+            _StC_dictionary.TryGetValue(mod, out var entries);
             return entries?.Where(x => x.ServerName == serverItemDefinition.UniqueIdentifier)
                            .Select(x => new ClientItemDefinition
                                         {
@@ -135,8 +135,8 @@ namespace MetaModFramework.Services
 
         private async Task<ServerItemDefinition> GetServerNameAsync(ClientItemDefinition clientItemDefinition)
         {
-            await this._readInTask;
-            return this._CtS_dictionary.TryGetValue(clientItemDefinition, out var clientName) ? new ServerItemDefinition{UniqueIdentifier = clientName} : null;
+            await _readInTask;
+            return _CtS_dictionary.TryGetValue(clientItemDefinition, out var clientName) ? new ServerItemDefinition{UniqueIdentifier = clientName} : null;
         }
 
         private async Task ReadAllAsync()
@@ -178,19 +178,19 @@ namespace MetaModFramework.Services
                                                 continue;
                                             }
 
-                                            this._CtS_dictionary[new ClientItemDefinition
+                                            _CtS_dictionary[new ClientItemDefinition
                                                                  {
                                                                      Game             = ite.GameName,
                                                                      UniqueIdentifier = ite.ClientName
                                                                  }] = ite.ServerName;
                                             {
-                                                if (this._StC_dictionary.TryGetValue(ite.ServerName, out var names))
+                                                if (_StC_dictionary.TryGetValue(ite.ServerName, out var names))
                                                 {
                                                     names.Add(ite);
                                                 }
                                                 else
                                                 {
-                                                    if (!this._StC_dictionary.TryAdd(ite.ServerName,
+                                                    if (!_StC_dictionary.TryAdd(ite.ServerName,
                                                             new List<ItemTranslationEntry>
                                                             { ite }))
                                                     {
@@ -224,38 +224,38 @@ namespace MetaModFramework.Services
 
         private async Task ReadFromDbAsync()
         {
-            var col  = this._db.GetCollection<ItemTranslationEntry>("ItemTranslationLayer");
+            var col  = _db.GetCollection<ItemTranslationEntry>("ItemTranslationLayer");
             var list = await col.Query().ToListAsync();
             foreach (var entry in list)
             {
-                this._CtS_dictionary[
+                _CtS_dictionary[
                                      new ClientItemDefinition
                                          {
                                              UniqueIdentifier = entry.ClientName,
                                              Game = entry.GameName
                                          }
                                     ]  = entry.ServerName;
-                if (this._StC_dictionary.TryGetValue(entry.GameName, out var entries))
+                if (_StC_dictionary.TryGetValue(entry.GameName, out var entries))
                 {
                     entries.Add(entry);
                 }
                 else
                 {
-                    this._StC_dictionary.Add(entry.GameName, new List<ItemTranslationEntry>{entry});
+                    _StC_dictionary.Add(entry.GameName, new List<ItemTranslationEntry>{entry});
                 }
             }
         }
         private async Task SaveToDbAsync()
         {
-            var col   = this._db.GetCollection<ItemTranslationEntry>("ItemTranslationLayer");
-            var tasks = this._StC_dictionary.Values
+            var col   = _db.GetCollection<ItemTranslationEntry>("ItemTranslationLayer");
+            var tasks = _StC_dictionary.Values
                             .Select(itemTranslationEntry => col.UpsertAsync(itemTranslationEntry));
             await Task.WhenAll(tasks);
         }
         
         public async ValueTask DisposeAsync()
         {
-            await this._readInTask;
+            await _readInTask;
             await SaveToDbAsync();
         }
     }

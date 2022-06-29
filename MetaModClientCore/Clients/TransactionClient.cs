@@ -10,14 +10,14 @@ namespace MetaModClientCore.Clients
         public async Task<bool> BeginTransaction()
         {
             var request = BuildRequest("Transaction", HttpMethod.Get);
-            var answer  = await this.Client.SendAsync(request);
+            var answer  = await Client.SendAsync(request);
             return answer.IsSuccessStatusCode;
         }
         
         public async Task<bool> EndTransaction()
         {
             var request = BuildRequest("Transaction", HttpMethod.Post);
-            var answer  = await this.Client.SendAsync(request);
+            var answer  = await Client.SendAsync(request);
             return answer.IsSuccessStatusCode;
         }
     }

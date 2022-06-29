@@ -11,7 +11,7 @@ namespace MetaModClientCore.Clients
     {
         public ItemClient(string baseUrl, string token, string game) : base(baseUrl, token)
         {
-            this._game  = game;
+            _game  = game;
         }
         
         private readonly string _game;
@@ -23,7 +23,7 @@ namespace MetaModClientCore.Clients
         public async Task<bool> PostItemsAsync(params ClientItem[] items)
         {
             var request = BuildRequest("Items", HttpMethod.Post, JsonSerializer.Serialize(items));
-            var answer  = await this.Client.SendAsync(request);
+            var answer  = await Client.SendAsync(request);
             return answer.IsSuccessStatusCode;
         }
         
@@ -35,13 +35,13 @@ namespace MetaModClientCore.Clients
         {
             var body    = JsonSerializer.Serialize(items);
             var request = BuildRequest("Items", HttpMethod.Put, body);
-            var answer  = await this.Client.SendAsync(request);
+            var answer  = await Client.SendAsync(request);
             return answer.IsSuccessStatusCode;
         }
         
         public async Task<List<string>> GetAllItemsForGameAsync()
         {
-            var builder = new UriBuilder(this.urlBase + $"Items/{_game}/Available");
+            var builder = new UriBuilder(urlBase + $"Items/{_game}/Available");
             return await JsonSerializer.DeserializeAsync<List<string>>(await Client.GetStreamAsync(builder.ToString()),SerializerOptions);
         }
         

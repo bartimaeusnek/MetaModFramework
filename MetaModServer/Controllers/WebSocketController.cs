@@ -19,14 +19,14 @@ namespace MetaModFramework.Controllers
         [HttpGet("/v1/ws")]
         public async Task Get()
         {
-            if (!this.HttpContext.WebSockets.IsWebSocketRequest)
+            if (!HttpContext.WebSockets.IsWebSocketRequest)
             {
-                this.HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+                HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
             }
             else
             {
-                using var webSocket = await this.HttpContext.WebSockets.AcceptWebSocketAsync();
-                await this.flowControl.HandleWebSocketConnection(webSocket, CancellationToken.None);
+                using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
+                await flowControl.HandleWebSocketConnection(webSocket, CancellationToken.None);
             }
         }
     }

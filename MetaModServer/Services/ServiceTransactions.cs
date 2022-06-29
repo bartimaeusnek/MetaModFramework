@@ -13,14 +13,14 @@ namespace MetaModFramework.Services
             {
                 lock (SyncLock)
                 {
-                    return Interlocked.Read(ref this._lock) == 1;
+                    return Interlocked.Read(ref _lock) == 1;
                 }
             }
             set
             {
                 lock (SyncLock)
                 {
-                    Interlocked.Exchange(ref this._lock, Convert.ToInt64(value));
+                    Interlocked.Exchange(ref _lock, Convert.ToInt64(value));
                 }
             }
         }

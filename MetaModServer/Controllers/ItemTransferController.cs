@@ -22,18 +22,18 @@ namespace MetaModFramework.Controllers
 
         public ItemTransferController(LiteDatabaseAsync db, ILogger<AccountController> logger, ItemTranslationLayer itemTranslationLayer)
         {
-            this._db                   = db;
-            this._logger               = logger;
-            this._itemTranslationLayer = itemTranslationLayer;
+            _db                   = db;
+            _logger               = logger;
+            _itemTranslationLayer = itemTranslationLayer;
         }
 
         [HttpGet, Route("/v1/Items/All"), Obsolete("Use WebSocket Connection instead!")]
         public async Task<IActionResult> GetAllAsync()
         {
-            var userClaimsPrincipal = this.HttpContext.User;
+            var userClaimsPrincipal = HttpContext.User;
             if (userClaimsPrincipal.Identity == null)
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-           return this.Ok(await this._db.GetCollection<ServerItem>(userClaimsPrincipal.Identity.Name + "_"+ nameof(ServerItemDefinition)).Query().ToArrayAsync());
+           return Ok(await _db.GetCollection<ServerItem>(userClaimsPrincipal.Identity.Name + "_"+ nameof(ServerItemDefinition)).Query().ToArrayAsync());
         }
 
         /**
@@ -42,21 +42,21 @@ namespace MetaModFramework.Controllers
         [HttpGet, Route("/v1/Items/Web/{user}/{game?}"), AllowAnonymous]
         public async Task<IActionResult> WebEndpoint(string user, string game = null)
         {
-            var serverItems = await this._db
+            var serverItems = await _db
                                         .GetCollection<ServerItem>(user + "_" +
                                                                    nameof(ServerItemDefinition)).Query().ToArrayAsync();
 
-            return game != null ? this.Ok(await this._itemTranslationLayer.GetClientNamesAsync(game, serverItems)) : this.Ok(serverItems);
+            return game != null ? Ok(await _itemTranslationLayer.GetClientNamesAsync(game, serverItems)) : Ok(serverItems);
         }
 
         [HttpGet, Route("/v1/Items/{game}"), Obsolete("Use WebSocket Connection instead!")]
         public async Task<IActionResult> GetAsync([FromRoute] string game)
         {
-            var userClaimsPrincipal = this.HttpContext.User;
+            var userClaimsPrincipal = HttpContext.User;
             if (userClaimsPrincipal.Identity == null)
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             
-            return this.Ok(await GetAsyncInternal(game, userClaimsPrincipal.Identity.Name, this._itemTranslationLayer, this._db));
+            return Ok(await GetAsyncInternal(game, userClaimsPrincipal.Identity.Name, _itemTranslationLayer, _db));
         }
 
         [NonAction]
@@ -73,7 +73,7 @@ namespace MetaModFramework.Controllers
         [HttpPut, Route("/v1/Items"), Obsolete("Use WebSocket Connection instead!")]
         public async Task<IActionResult> RequestAsync([FromBody] ClientItem item)
         {
-            var userClaimsPrincipal = this.HttpContext.User;
+            var userClaimsPrincipal = HttpContext.User;
             if (userClaimsPrincipal.Identity == null)
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             var name = userClaimsPrincipal.Identity.Name;
@@ -82,8 +82,8 @@ namespace MetaModFramework.Controllers
                                              await PutRequestItems(
                                                                     item,
                                                                     name,
-                                                                    this._itemTranslationLayer,
-                                                                    this._db
+                                                                    _itemTranslationLayer,
+                                                                    _db
                                                                    )
                                        );
         }
@@ -124,10 +124,10 @@ namespace MetaModFramework.Controllers
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             WsEventHandler.OnHandler();
             
-            var ret = await PostUpsertItems(items, userClaimsPrincipal.Identity.Name, this._itemTranslationLayer,
-                                            this._db);
+            var ret = await PostUpsertItems(items, userClaimsPrincipal.Identity.Name, _itemTranslationLayer,
+                                            _db);
 
-            return this.Ok(ret);
+            return Ok(ret);
         }
 
         [NonAction]
@@ -151,6 +151,6 @@ namespace MetaModFramework.Controllers
 
         [HttpGet, Route("/v1/Items/{game}/Available"), AllowAnonymous]
         public async Task<IActionResult> GetDefinitions([FromRoute] string game) 
-            => this.Ok(await this._itemTranslationLayer.GetAllDefinitions(game));
+            => Ok(await _itemTranslationLayer.GetAllDefinitions(game));
     }
 }

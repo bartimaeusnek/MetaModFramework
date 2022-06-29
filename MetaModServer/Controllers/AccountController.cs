@@ -30,10 +30,10 @@ namespace MetaModFramework.Controllers
                                  ILogger<AccountController>     logger,
                                  IConfiguration                 configuration)
         {
-            this._signInManager = signInManager;
-            this._userManager   = userManager;
-            this._logger        = logger;
-            this._configuration = configuration;
+            _signInManager = signInManager;
+            _userManager   = userManager;
+            _logger        = logger;
+            _configuration = configuration;
         }
         
         [HttpPost, Route("/v1/Register"), AllowAnonymous]
@@ -41,7 +41,6 @@ namespace MetaModFramework.Controllers
         {
             if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(password))
                 return new StatusCodeResult(StatusCodes.Status400BadRequest);
-
             name     = name.Trim();
             password = password.Trim();
             email    = email.Trim();
@@ -50,7 +49,7 @@ namespace MetaModFramework.Controllers
             if (!result.Succeeded)
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             // await this._signInManager.SignInAsync(user, false);
-            this._logger.LogInformation("User created a new account with password.");
+            _logger.LogInformation("User created a new account with password.");
             return new StatusCodeResult(StatusCodes.Status202Accepted);
         }
         
@@ -65,10 +64,10 @@ namespace MetaModFramework.Controllers
             var result = await _signInManager.PasswordSignInAsync(userName, password, true, false);
 
             if (!result.Succeeded)
-                return this.Unauthorized();
+                return Unauthorized();
             
-            var user      = await this._userManager.FindByNameAsync(userName);
-            var userRoles = await this._userManager.GetRolesAsync(user);  
+            var user      = await _userManager.FindByNameAsync(userName);
+            var userRoles = await _userManager.GetRolesAsync(user);  
   
             var authClaims = new List<Claim>  
                              {  
@@ -90,7 +89,7 @@ namespace MetaModFramework.Controllers
             
             ServiceTransactions.AddUser(user.UserName);
             
-            return this.Ok(new JwtSecurityTokenHandler().WriteToken(token));
+            return Ok(new JwtSecurityTokenHandler().WriteToken(token));
         }
         
         [HttpPost, Route("/v1/Logout")]

@@ -14,7 +14,7 @@ namespace MetaModFramework.Controllers
         {
             return await Task.Run<IActionResult>(() =>
                                                  {
-                                                     var userClaimsPrincipal = this.HttpContext.User;
+                                                     var userClaimsPrincipal = HttpContext.User;
                                                      if (userClaimsPrincipal.Identity == null)
                                                          return new StatusCodeResult(StatusCodes
                                                             .Status500InternalServerError);
@@ -30,7 +30,7 @@ namespace MetaModFramework.Controllers
         {
             return await Task.Run<IActionResult>(() =>
                                                  {
-                                                     var userClaimsPrincipal = this.HttpContext.User;
+                                                     var userClaimsPrincipal = HttpContext.User;
                                                      if (userClaimsPrincipal.Identity == null)
                                                          return new StatusCodeResult(StatusCodes
                                                             .Status500InternalServerError);
@@ -38,7 +38,7 @@ namespace MetaModFramework.Controllers
                                                      ServiceTransactions
                                                                        .EndTransaction(userClaimsPrincipal
                                                                         .Identity.Name);
-                                                     return this.Ok();
+                                                     return Ok();
                                                  });
         }
     }

@@ -12,14 +12,14 @@ namespace MetaModFramework.Services
 
         public void Dispose()
         {
-            this.Database?.Dispose();
+            Database?.Dispose();
         }
 
         public LiteDatabase LiteDatabase
         {
             get
             {
-                return (LiteDatabase) this.Database.UnderlyingDatabase;
+                return (LiteDatabase) Database.UnderlyingDatabase;
             }
         }
     }

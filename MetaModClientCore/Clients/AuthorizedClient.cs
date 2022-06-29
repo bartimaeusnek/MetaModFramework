@@ -7,7 +7,7 @@ namespace MetaModClientCore.Clients
     {
         public AuthorizedClient(string baseUrl, string token) : base(baseUrl)
         {
-            this.Token = token;
+            Token = token;
         }
 
         protected string Token { get; }
@@ -15,7 +15,7 @@ namespace MetaModClientCore.Clients
         protected override HttpRequestMessage BuildRequest(string path, HttpMethod method, (string, string)[] queries, string content)
         {
             var request = base.BuildRequest(path, method, queries, content);
-            request.Headers.Authorization = AuthenticationHeaderValue.Parse("Bearer " + this.Token);
+            request.Headers.Authorization = AuthenticationHeaderValue.Parse("Bearer " + Token);
             return request;
         }
     }

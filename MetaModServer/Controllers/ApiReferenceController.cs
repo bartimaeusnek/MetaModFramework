@@ -21,6 +21,6 @@ namespace MetaModFramework.Controllers
 
         [HttpGet]
         public async Task<IActionResult> OnGet() 
-            => this.Ok(await _db.GetCollection<ApiReference>().Query().FirstAsync());
+            => Ok(await _db.GetCollection<ApiReference>().Query().FirstAsync());
     }
 }

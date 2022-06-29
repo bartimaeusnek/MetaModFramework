@@ -16,7 +16,7 @@ namespace MetaModClientCore.Clients
         protected BaseClient(string baseUrl)
         {
             baseUrl      = baseUrl.Trim(' ', '/', '"');
-            this.urlBase = $"{baseUrl}/{this.GetApiVersion(baseUrl)}/";
+            urlBase = $"{baseUrl}/{GetApiVersion(baseUrl)}/";
         }
 
         // ReSharper disable once MemberCanBePrivate.Global
@@ -24,13 +24,13 @@ namespace MetaModClientCore.Clients
         {
             var builder = new UriBuilder(baseUrl +"/ApiReference");
             var answer  = Client.GetStringAsync(builder.ToString()).Result;
-            var version = JsonSerializer.Deserialize<ApiReference>(answer, this.SerializerOptions);
+            var version = JsonSerializer.Deserialize<ApiReference>(answer, SerializerOptions);
             return "v" + version?.Version;
         }
 
         public void Dispose()
         {
-            this.Client?.Dispose();
+            Client?.Dispose();
         }
         
         protected HttpRequestMessage BuildRequest(string path, HttpMethod method) 
@@ -44,7 +44,7 @@ namespace MetaModClientCore.Clients
 
         protected virtual HttpRequestMessage BuildRequest(string path, HttpMethod method, (string, string)[] queries, string content)
         {
-            var builder = new UriBuilder(this.urlBase + path);
+            var builder = new UriBuilder(urlBase + path);
             var query   = HttpUtility.ParseQueryString(builder.Query);
             foreach (var (key, value) in queries)
             {
