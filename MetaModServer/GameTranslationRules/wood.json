@@ -1,0 +1,22 @@
+[
+	{
+		"ServerName": "logOak",
+		"ClientName": "minecraft:oak_wood",
+		"GameName": "Minecraft_1.17.1"
+	},
+	{
+		"ServerName": "logOak",
+		"ClientName": "minecraft:log",
+		"GameName": "Minecraft_1.7.10"
+	},
+	{
+		"ServerName": "logOak",
+		"ClientName": "Eco.Mods.TechTree.OakLogItem",
+		"GameName": "Eco"
+	}, 
+	{
+		"ServerName": "logOak",
+		"ClientName": "thingWood",
+		"GameName": "Rimworld"
+    }
+]

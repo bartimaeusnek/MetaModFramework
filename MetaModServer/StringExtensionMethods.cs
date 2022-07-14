@@ -1,26 +1,25 @@
-﻿namespace MetaModFramework
+﻿namespace MetaModFramework;
+
+//Shamelessly taken from https://stackoverflow.com/a/36845864
+//this code is CC BY-SA 3.0, made by Scott Chamberlain, Apr 25 '16 at 16:16
+public static class StringExtensionMethods
 {
-    //Shamelessly taken from https://stackoverflow.com/a/36845864
-    //this code is CC BY-SA 3.0, made by Scott Chamberlain, Apr 25 '16 at 16:16
-    public static class StringExtensionMethods
+    public static int GetStableHashCode(this string str)
     {
-        public static int GetStableHashCode(this string str)
+        unchecked
         {
-            unchecked
+            int hash1 = 5381;
+            int hash2 = hash1;
+
+            for (int i = 0; i < str.Length && str[i] != '\0'; i += 2)
             {
-                int hash1 = 5381;
-                int hash2 = hash1;
-
-                for (int i = 0; i < str.Length && str[i] != '\0'; i += 2)
-                {
-                    hash1 = ((hash1 << 5) + hash1) ^ str[i];
-                    if (i == str.Length - 1 || str[i + 1] == '\0')
-                        break;
-                    hash2 = ((hash2 << 5) + hash2) ^ str[i + 1];
-                }
-
-                return hash1 + (hash2 * 1566083941);
+                hash1 = ((hash1 << 5) + hash1) ^ str[i];
+                if (i == str.Length - 1 || str[i + 1] == '\0')
+                    break;
+                hash2 = ((hash2 << 5) + hash2) ^ str[i + 1];
             }
+
+            return hash1 + (hash2 * 1566083941);
         }
     }
 }

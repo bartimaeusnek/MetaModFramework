@@ -2,67 +2,66 @@
 using System.Collections.Generic;
 using System.Threading;
 
-namespace MetaModFramework.Services
+namespace MetaModFramework.Services;
+
+public class ServiceTransactions
 {
-    public class ServiceTransactions
+    private long _lock;
+    public bool Lock
     {
-        private long _lock;
-        public bool Lock
+        get
         {
-            get
+            lock (SyncLock)
             {
-                lock (SyncLock)
-                {
-                    return Interlocked.Read(ref _lock) == 1;
-                }
-            }
-            set
-            {
-                lock (SyncLock)
-                {
-                    Interlocked.Exchange(ref _lock, Convert.ToInt64(value));
-                }
+                return Interlocked.Read(ref _lock) == 1;
             }
         }
+        set
+        {
+            lock (SyncLock)
+            {
+                Interlocked.Exchange(ref _lock, Convert.ToInt64(value));
+            }
+        }
+    }
 
-        private static readonly object SyncLock = new ();
+    private static readonly object SyncLock = new ();
 
-        private static readonly Dictionary<string, ServiceTransactions> Directory = new();
+    private static readonly Dictionary<string, ServiceTransactions> Directory = new();
         
-        public static bool TransactionNotInUse(string user)
+    public static bool TransactionNotInUse(string user)
+    {
+        lock (SyncLock)
         {
-            lock (SyncLock)
-            {
-                return !Directory[user].Lock;
-            }
+            return !Directory[user].Lock;
         }
+    }
         
-        public static bool CanNotRequestTransaction(string user)
+    public static bool CanNotRequestTransaction(string user)
+    {
+        lock (SyncLock)
         {
-            lock (SyncLock)
-            {
-                var @lock = Directory[user].Lock;
-                if (@lock)
-                    return true;
-                Directory[user].Lock = true;
-                return false;
-            }
+            var @lock = Directory[user].Lock;
+            if (@lock)
+                return true;
+            Directory[user].Lock = true;
+            return false;
         }
+    }
         
-        public static void EndTransaction(string user)
+    public static void EndTransaction(string user)
+    {
+        lock (SyncLock)
         {
-            lock (SyncLock)
-            {
-                Directory[user].Lock = false;
-            }
+            Directory[user].Lock = false;
         }
+    }
 
-        public static void AddUser(string user)
+    public static void AddUser(string user)
+    {
+        lock (SyncLock)
         {
-            lock (SyncLock)
-            {
-                Directory.TryAdd(user, new ServiceTransactions());
-            }
+            Directory.TryAdd(user, new ServiceTransactions());
         }
     }
 }

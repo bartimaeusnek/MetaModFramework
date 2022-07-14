@@ -1,7 +1,6 @@
-﻿namespace MetaModFramework.DTOs
+﻿namespace MetaModFramework.DTOs;
+
+public record ApiReference
 {
-    public record ApiReference
-    {
-        public int Version { get; set; } = 1;
-    }
+    public int Version { get; set; } = 1;
 }

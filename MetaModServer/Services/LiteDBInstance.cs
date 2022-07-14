@@ -4,23 +4,22 @@ using AspNetCore.Identity.LiteDB.Data;
 using LiteDB;
 using LiteDB.Async;
 
-namespace MetaModFramework.Services
+namespace MetaModFramework.Services;
+
+public class LiteDbInstance : ILiteDbContext, IDisposable
 {
-    public class LiteDbInstance : ILiteDbContext, IDisposable
+    public LiteDatabaseAsync Database { get; } = new($"Filename={Path.Combine(Directory.GetCurrentDirectory(), "LDB.mms")};Connection=shared;");
+
+    public void Dispose()
     {
-        public LiteDatabaseAsync Database { get; } = new($"Filename={Path.Combine(Directory.GetCurrentDirectory(), "LDB.mms")};Connection=shared;");
+        Database?.Dispose();
+    }
 
-        public void Dispose()
+    public LiteDatabase LiteDatabase
+    {
+        get
         {
-            Database?.Dispose();
-        }
-
-        public LiteDatabase LiteDatabase
-        {
-            get
-            {
-                return (LiteDatabase) Database.UnderlyingDatabase;
-            }
+            return (LiteDatabase) Database.UnderlyingDatabase;
         }
     }
 }
