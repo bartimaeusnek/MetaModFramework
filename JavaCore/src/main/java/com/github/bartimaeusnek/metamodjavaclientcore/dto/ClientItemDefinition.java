@@ -19,8 +19,8 @@ public class ClientItemDefinition {
         @Override
         public ClientItemDefinition deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             var obj = json.getAsJsonObject();
-            var uniqueIdentifier= obj.get("uniqueIdentifier").getAsString();
-            var game = obj.get("game").getAsString();
+            var uniqueIdentifier= obj.get("UniqueIdentifier").getAsString();
+            var game = obj.get("Game").getAsString();
             var ret = new ClientItemDefinition();
             ret.setGame(game);
             ret.setUniqueIdentifier(uniqueIdentifier);

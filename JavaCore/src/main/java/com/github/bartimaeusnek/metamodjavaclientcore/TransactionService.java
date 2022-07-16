@@ -3,6 +3,7 @@ package com.github.bartimaeusnek.metamodjavaclientcore;
 import lombok.var;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -22,7 +23,7 @@ public class TransactionService extends AuthorizedClient {
                 .idleTimeout(1, TimeUnit.MINUTES)
                 .send();
 
-        return response.getStatus() == 200;
+        return response.getStatus() == HttpStatus.OK_200;
     }
 
     public boolean postLock() throws ExecutionException, InterruptedException, TimeoutException {
@@ -34,6 +35,6 @@ public class TransactionService extends AuthorizedClient {
                 .idleTimeout(1, TimeUnit.MINUTES)
                 .send();
 
-        return response.getStatus() == 200;
+        return response.getStatus() == HttpStatus.OK_200;
     }
 }

@@ -17,7 +17,7 @@ public class ServerItemDefinition {
         @Override
         public ServerItemDefinition deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             var obj = json.getAsJsonObject();
-            var uniqueIdentifier= obj.get("uniqueIdentifier").getAsString();
+            var uniqueIdentifier= obj.get("UniqueIdentifier").getAsString();
             var ret = new ServerItemDefinition();
             ret.setUniqueIdentifier(uniqueIdentifier);
             return ret;

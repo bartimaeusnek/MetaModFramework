@@ -7,6 +7,7 @@ import lombok.var;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 
 import java.lang.reflect.Type;
 import java.util.Arrays;
@@ -37,7 +38,7 @@ public class ItemClient extends AuthorizedClient {
                 .content(new StringContentProvider(getGson().toJson(items)), "application/json")
                 .send();
 
-        return response.getStatus() == 200;
+        return response.getStatus() == HttpStatus.OK_200;
     }
 
     /**
@@ -54,7 +55,7 @@ public class ItemClient extends AuthorizedClient {
                 .content(new StringContentProvider(getGson().toJson(items)), "application/json")
                 .send();
         var status = response.getStatus();
-        return status == 200;
+        return status == HttpStatus.OK_200;
     }
 
     public List<String> getAllItemsForGameAsync() throws ExecutionException, InterruptedException, TimeoutException {

@@ -19,9 +19,9 @@ public class ClientItem {
                     .registerTypeAdapter(ClientItemDefinition.class, new ClientItemDefinition.Deserializer())
                     .create();
             var obj = json.getAsJsonObject(); //our original full json string
-            var dataElement = obj.get("itemDefinition");
+            var dataElement = obj.get("ItemDefinition");
             var cid = gson.fromJson(dataElement, ClientItemDefinition.class);
-            var amount = obj.get("amount").getAsLong();
+            var amount = obj.get("Amount").getAsLong();
             var ret = new ClientItem();
             ret.setAmount(amount);
             ret.setItemDefinition(cid);
